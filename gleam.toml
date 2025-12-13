@@ -1,0 +1,12 @@
+name = "either_or"
+version = "1.0.0"
+
+description = "A package implementing a 'joke' choice type named `EitherOr` with variants `Either` and `Or`. Similar to [gleither](https://github.com/bwireman/gleither)."
+licences = ["Apache-2.0"]
+repository = { type = "github", user = "vistuleB", repo = "either_or" }
+
+[dependencies]
+gleam_stdlib = ">= 0.44.0 and < 2.0.0"
+
+[dev-dependencies]
+gleeunit = ">= 1.0.0 and < 2.0.0"
