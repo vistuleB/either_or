@@ -8,8 +8,8 @@ pub type EitherOr(a, b) {
   Or(b)
 }
 
-/// Given an EitherOr value returns True if and
-/// only if the value is an Either variant.
+/// Given a value of type `EitherOr(a, b)` returns `True` if and
+/// only if the value is an `Either` variant.
 ///
 pub fn is_either(v: EitherOr(a, b)) -> Bool {
   case v {
@@ -18,8 +18,8 @@ pub fn is_either(v: EitherOr(a, b)) -> Bool {
   }
 }
 
-/// Given an EitherOr value returns True if and
-/// only if the value is an Or variant.
+/// Given a value of type `EitherOr(a, b)` value returns `True` if and
+/// only if the value is an `Or` variant.
 ///
 pub fn is_or(v: EitherOr(a, b)) -> Bool {
   case v {
@@ -28,8 +28,8 @@ pub fn is_or(v: EitherOr(a, b)) -> Bool {
   }
 }
 
-/// Converts an EitherOr(a, b) value into Some(x) if
-/// the value has the form Either(x), else None.
+/// Given a value of type `EitherOr(a, b)` returns `Some(a)` if
+/// the value has the form `Either(a)` else returns `None`.
 ///
 pub fn get_either(v: EitherOr(a, b)) -> Option(a) {
   case v {
@@ -38,8 +38,8 @@ pub fn get_either(v: EitherOr(a, b)) -> Option(a) {
   }
 }
 
-/// Converts an EitherOr(a, b) value into Some(x) if
-/// the value has the form Or(x), else None.
+/// Given a value of type `EitherOr(a, b)` returns `Some(x)` if
+/// the value has the form `Or(x)` else returns `None`.
 ///
 pub fn get_or(v: EitherOr(a, b)) -> Option(b) {
   case v {
@@ -48,8 +48,9 @@ pub fn get_or(v: EitherOr(a, b)) -> Option(b) {
   }
 }
 
-/// Given an EitherOr value returns x if the value has
-/// the form Either(x) otherwise returns the supplied default.
+/// Given a value of type `EitherOr(a, b)` and default of type `a`
+/// returns `x` if the value has the form `Either(x)` else returns
+/// the default.
 ///
 pub fn unwrap_either(v: EitherOr(a, b), default: a) -> a {
   case v {
@@ -58,8 +59,9 @@ pub fn unwrap_either(v: EitherOr(a, b), default: a) -> a {
   }
 }
 
-/// Given an EitherOr value returns x if the value has
-/// the form Or(x) otherwise returns the supplied default.
+/// Given a value of type `EitherOr(a, b)` and default of type `b`
+/// returns `x` if the value has the form `Or(x)` else returns
+/// the default.
 ///
 pub fn unwrap_or(v: EitherOr(a, b), default: b) -> b {
   case v {
@@ -68,10 +70,20 @@ pub fn unwrap_or(v: EitherOr(a, b), default: b) -> b {
   }
 }
 
-/// Given a value of type EitherOr(a, b) and a
-/// function f(a) -> c returns Either(f(a)) if the
-/// value has the form Either(a) and returns Or(b)
-/// if the value has the form Or(b).
+/// Given a value of type `EitherOr(a, a)` returns the payload
+/// of type `a` regardless of the variant.
+///
+pub fn unwrap(v: EitherOr(a, a)) -> a {
+  case v {
+    Either(a) -> a
+    Or(a) -> a
+  }
+}
+
+/// Given a value of type `EitherOr(a, b)` and a
+/// function `f: a -> c` returns `Either(f(a))` if the
+/// value has the form `Either(a)` and returns `Or(b)`
+/// if the value has the form `Or(b)`.
 ///
 pub fn map_either(
   v: EitherOr(a, b),
@@ -83,10 +95,10 @@ pub fn map_either(
   }
 }
 
-/// Given a value of type EitherOr(a, b) and a
-/// function f(b) -> c returns Or(f(b)) if the
-/// value has the form Or(b) and returns Either(a)
-/// if the value has the form Either(a).
+/// Given a value of type `EitherOr(a, b)` and a
+/// function `f: b -> c` returns `Or(f(b))` if the
+/// value has the form `Or(b)` and returns `Either(a)`
+/// if the value has the form `Either(a)`.
 ///
 pub fn map_or(
   v: EitherOr(a, b),
@@ -98,14 +110,14 @@ pub fn map_or(
   }
 }
 
-/// Apply separate maps to each payload of an EitherOr
+/// Apply separate maps to each payload of an `EitherOr`
 /// value.
 ///
-/// Symmetric to map_eo.
+/// Symmetric to `map_oe`.
 /// 
 /// Both functions are offered to in order to allow 
-/// the happy path to be pursued with either 'Either'
-/// or 'Or' variants via the `use <-` syntax.
+/// the happy path to be pursued with either `Either`
+/// or `Or` variants via the `use <-` syntax.
 ///
 pub fn map_eo(
   v: EitherOr(a, b),
@@ -118,14 +130,14 @@ pub fn map_eo(
   }
 }
 
-/// Apply separate maps to each payload of an EitherOr
+/// Apply separate maps to each payload of an `EitherOr`
 /// value.
 ///
-/// Symmetric to map_oe.
+/// Symmetric to `map_eo`.
 /// 
 /// Both functions are offered to in order to allow 
-/// the happy path to be pursued with either 'Either'
-/// or 'Or' variants via the `use <-` syntax.
+/// the happy path to be pursued with either `Either`
+/// or `Or` variants via the `use <-` syntax.
 ///
 pub fn map_oe(
   v: EitherOr(a, b),
@@ -138,16 +150,16 @@ pub fn map_oe(
   }
 }
 
-/// Given a value of type EitherOr(a, b) and functions
-/// f1(a) -> c, f2(b) -> c, returns f1(a) if the
-/// value has the form Either(a) and returns f2(b)
-/// if the value has the form Or(b).
+/// Given a value of type `EitherOr(a, b)` and functions
+/// `f1: a -> c`, `f2: b -> c`, returns `f1(a)` if the
+/// value has the form `Either(a)` and returns `f2(b)`
+/// if the value has the form `Or(b)`.
 ///
-/// Symmetric to resolve_oe.
+/// Symmetric to `resolve_oe`.
 /// 
 /// Both functions are offered to in order to allow 
-/// the happy path to be pursued with either 'Either'
-/// or 'Or' variants via the `use <-` syntax.
+/// the happy path to be pursued with either `Either`
+/// or `Or` variants via the `use <-` syntax.
 ///
 pub fn resolve_eo(
   t: EitherOr(a, b),
@@ -160,16 +172,16 @@ pub fn resolve_eo(
   }
 }
 
-/// Given a value of type EitherOr(a, b) and functions
-/// f1(b) -> c, f1(a) -> c, returns f1(a) if the
-/// value has the form Either(a) and returns f2(b)
-/// if the value has the form Or(b).
+/// Given a value of type`EitherOr(a, b)` and functions
+/// `f1: b -> c`, `f2: a -> c`, returns `f1(a)` if the
+/// value has the form Either(a) and returns `f2(b)`
+/// if the value has the form `Or(b)`.
 ///
-/// Symmetric to resolve_eo.
+/// Symmetric to `resolve_eo`.
 /// 
 /// Both functions are offered to in order to allow 
-/// the happy path to be pursued with either 'Either'
-/// or 'Or' variants via the `use <-` syntax.
+/// the happy path to be pursued with either `Either`
+/// or `Or` variants via the `use <-` syntax.
 /// 
 pub fn resolve_oe(
   t: EitherOr(a, b),
@@ -182,39 +194,40 @@ pub fn resolve_oe(
   }
 }
 
-/// Flatten a `EitherOr(EitherOr(a, b), b)` value.
+/// Flatten an `EitherOr(EitherOr(a, b), b)`-value.
 /// 
 pub fn flatten_either(
-  either: EitherOr(EitherOr(a, b), b),
+  t: EitherOr(EitherOr(a, b), b),
 ) -> EitherOr(a, b) {
-  case either {
-    Either(inner) -> inner
-    Or(x) -> Or(x)
+  case t {
+    Either(either_or) -> either_or
+    Or(b) -> Or(b)
   }
 }
 
-/// Flatten a `EitherOr(a, EitherOr(a, b))` value.
+/// Flatten an `EitherOr(a, EitherOr(a, b))`-value.
 /// 
 pub fn flatten_or(
-  either: EitherOr(a, EitherOr(a, b)),
+  t: EitherOr(a, EitherOr(a, b)),
 ) -> EitherOr(a, b) {
-  case either {
-    Either(x) -> Either(x)
-    Or(inner) -> inner
+  case t {
+    Either(a) -> Either(a)
+    Or(either_or) -> either_or
   }
 }
 
 /// Flatten a `EitherOr(EitherOr(a, b), EitherOr(a, b))` value.
 /// 
+/// Isomorphic to the special case of `unwrap` in which the type
+/// `a` has the form `EitherOr(c, d)` for some types `c` and `d`.
+/// 
 pub fn flatten(
-  either: EitherOr(EitherOr(a, b), EitherOr(a, b)),
+  t: EitherOr(EitherOr(a, b), EitherOr(a, b)),
 ) -> EitherOr(a, b) {
-  case either {
-    Either(a) -> a
-    Or(x) -> x
-  }
+  unwrap(t)
 }
-/// Compose map_either and flatten.
+
+/// Compose `map_either` and `flatten_either`.
 ///
 pub fn flat_map_either(
   v: EitherOr(a, b),
@@ -223,7 +236,7 @@ pub fn flat_map_either(
   v |> map_either(f) |> flatten_either
 }
 
-/// Compose map_or and flatten.
+/// Compose `map_or` and `flatten_or`.
 ///
 pub fn flat_map_or(
   v: EitherOr(a, b),
@@ -232,50 +245,8 @@ pub fn flat_map_or(
   v |> map_or(f) |> flatten_or
 }
 
-/// Apply a map of codomain EitherOr(c, d) to either
-/// side of an EitherOr(a, b) and flatten
-///
-/// Symmetric to flat_map_eo.
-/// 
-/// Both functions are offered to in order to allow 
-/// the happy path to be pursued with either 'Either'
-/// or 'Or' variants via the `use <-` syntax.
-/// 
-pub fn flat_map_eo(
-  v: EitherOr(a, b),
-  f1: fn(a) -> EitherOr(c, d),
-  f2: fn(b) -> EitherOr(c, d),
-) -> EitherOr(c, d) {
-  v
-  |> map_either(f1)
-  |> map_or(f2)
-  |> flatten
-}
-
-/// Aplly a map of codomain EitherOr(c, d) to either
-/// side of an EitherOr(a, b) and flatten
-///
-/// Symmetric to flat_map_eo.
-/// 
-/// Both functions are offered to in order to allow 
-/// the happy path to be pursued with either 'Either'
-/// or 'Or' variants via the `use <-` syntax.
-/// 
-pub fn flat_map_oe(
-  v: EitherOr(a, b),
-  f2: fn(b) -> EitherOr(c, d),
-  f1: fn(a) -> EitherOr(c, d),
-) -> EitherOr(c, d) {
-  v
-  |> map_either(f1)
-  |> map_or(f2)
-  |> flatten
-}
-
-/// Given a value of type EitherOr(a, b) returns a
-/// value of type EitherOr(b, a) by swapping the
-/// Either constructor for the Or constructor and
-/// vice-versa.
+/// Given a value of type `EitherOr(a, b)` returns a
+/// value of type `EitherOr(b, a)` by swapping the payloads.
 /// 
 pub fn swap(
   v: EitherOr(a, b),
@@ -286,10 +257,8 @@ pub fn swap(
   }
 }
 
-/// Given a List(EitherOr(a, b)) and a function
-/// f: fn(a) -> c returns a List(EitherOr(c, b)) by
-/// applying map_either(_, f) to each element of the
-/// list.
+/// Applies `map_either` to each element of a list of
+/// `EitherOr(a, b)` elements.
 /// 
 pub fn map_eithers(
   v: List(EitherOr(a, b)),
@@ -298,10 +267,8 @@ pub fn map_eithers(
   list.map(v, map_either(_, f))
 }
 
-/// Given a List(EitherOr(a, b)) and a function
-/// f: fn(b) -> c returns a List(EitherOr(a, c)) by
-/// applying map_or(_, f) to each element of the
-/// list.
+/// Applies `map_or` to each element of a list of
+/// `EitherOr(a, b)` elements.
 /// 
 pub fn map_ors(
   v: List(EitherOr(a, b)),
@@ -310,10 +277,8 @@ pub fn map_ors(
   list.map(v, map_or(_, f))
 }
 
-/// Given a List(EitherOr(a, b)) and functions
-/// f: fn(a) -> c, g: fn(b) -> c, returns a List(c)
-/// by mapping each element of the form Either(a) to
-/// f(a) and each element of the form Or(b) to g(b).
+/// Applies `resolve_eo` to each element of a list
+/// of `EitherOr(a, b)` elements.
 /// 
 pub fn map_resolve(
   v: List(EitherOr(a, b)),
@@ -379,9 +344,8 @@ fn group_ors_accumulator(
   }
 }
 
-/// Given a List(EitherOr(a, b)), removes all elements
-/// of the form Or(b) and unwraps the remaining elements
-/// of the form Either(a).
+/// Given a `List(EitherOr(a, b))` removes all elements
+/// of the form `Or(b)` and unwraps the remaining elements.
 /// 
 pub fn remove_ors_unwrap_eithers(ze_list: List(EitherOr(a, b))) -> List(a) {
   list.filter_map(ze_list, fn(either_or) {
@@ -392,9 +356,8 @@ pub fn remove_ors_unwrap_eithers(ze_list: List(EitherOr(a, b))) -> List(a) {
   })
 }
 
-/// Given a List(EitherOr(a, b)), removes all elements
-/// of the form Either(a) and unwraps the remaining elements
-/// of the form Or(b).
+/// Given a `List(EitherOr(a, b))` removes all elements
+/// of the form `Either(a)` and unwraps the remaining elements.
 /// 
 pub fn remove_eithers_unwrap_ors(ze_list: List(EitherOr(a, b))) -> List(b) {
   list.filter_map(ze_list, fn(either_or) {
@@ -405,42 +368,42 @@ pub fn remove_eithers_unwrap_ors(ze_list: List(EitherOr(a, b))) -> List(b) {
   })
 }
 
-/// Aggregates the payloads of consecutive Either instances
-/// from a List(EitherOr(a, b)) into single Either(List(a)) 
-/// elements, such as to turn a List(EitherOr(a, b)) into a
-/// List(EitherOr(List(a), b)). Introduces an element of the
-/// form Either([]: List(a)) between each consecutive pair of
-/// 'Or(b)' elements symoblizing an empty of 'Either' payloads
-/// sitting between pair of consecutive 'Or(b)' elements.
+/// Aggregates the payloads of consecutive `Either` instances
+/// from a `List(EitherOr(a, b))` into a single `Either(List(a))` 
+/// elements, such as to turn a `List(EitherOr(a, b))` into a
+/// `List(EitherOr(List(a), b))`. Introduces an element of the
+/// form `Either([]: List(a))` between each consecutive pair of
+/// `Or(b)` elements symoblizing an empty of `Either` payloads
+/// sitting between pair of consecutive `Or(b)` elements.
 /// 
-pub fn group_eithers(
+pub fn group_eithers_including_empty_lists(
   ze_list: List(EitherOr(a, b)),
 ) -> List(EitherOr(List(a), b)) {
   group_eithers_accumulator([], [], ze_list)
 }
 
-/// Aggregates the payloads of consecutive Or instances 
-/// from a List(EitherOr(a, b)) into single Or(List(b)) 
-/// elements, such as to turn a List(EitherOr(a, b)) into a
-/// List(EitherOr(a, List(b))). Introduces an element of the
-/// form Or([]: List(a)) between each consecutive pair of
-/// 'Either(a)' elements, symoblizing an empty of 'Or' payloads
-/// sitting between pair of consecutive 'Either(a)' elements.
+/// Aggregates the payloads of consecutive `Or` instances 
+/// from a `List(EitherOr(a, b))` into single `Or(List(b))` 
+/// elements, such as to turn a `List(EitherOr(a, b))` into a
+/// `List(EitherOr(a, List(b)))`. Introduces an element of the
+/// form `Or([]: List(b))` between each consecutive pair of
+/// `Either(a)` elements, symoblizing an empty of `Or` payloads
+/// sitting between pair of consecutive `Either(a)` elements.
 /// 
-pub fn group_ors(ze_list: List(EitherOr(a, b))) -> List(EitherOr(a, List(b))) {
+pub fn group_ors_including_empty_lists(ze_list: List(EitherOr(a, b))) -> List(EitherOr(a, List(b))) {
   group_ors_accumulator([], [], ze_list)
 }
 
-/// Aggregates the payloads of consecutive Either instances
-/// from a List(EitherOr(a, b)) into single Either(List(a)) 
-/// elements, such as to turn a List(EitherOr(a, b)) into a
-/// List(EitherOr(List(a), b)). Discards elements of the form
-/// Either([]) from the final list.
+/// Aggregates the payloads of consecutive `Either` instances
+/// from a `List(EitherOr(a, b))` into single `Either(List(a))` 
+/// elements, such as to turn a `List(EitherOr(a, b))` into a
+/// `List(EitherOr(List(a), b))`. Discards elements of the form
+/// `Either([])` from the final list.
 /// 
-pub fn group_eithers_no_empty_lists(
+pub fn group_eithers(
   ze_list: List(EitherOr(a, b)),
 ) -> List(EitherOr(List(a), b)) {
-  group_eithers(ze_list)
+  group_eithers_including_empty_lists(ze_list)
   |> list.filter(fn(thing) {
     case thing {
       Either(a_list) -> !{ list.is_empty(a_list) }
@@ -450,15 +413,15 @@ pub fn group_eithers_no_empty_lists(
 }
 
 /// Aggregates the payloads of consecutive Either instances
-/// from a List(EitherOr(a, b)) into single Either(List(a)) 
-/// elements, such as to turn a List(EitherOr(a, b)) into a
-/// List(EitherOr(List(a), b)). Discards elements of the form
-/// Or([]) from the final list.
+/// from a `List(EitherOr(a, b))` into single `Either(List(a))` 
+/// elements such as to turn a `List(EitherOr(a, b))` into a
+/// `List(EitherOr(List(a), b))`. Discards elements of the form
+/// `Or([])` from the final list.
 /// 
-pub fn group_ors_no_empty_lists(
+pub fn group_ors(
   ze_list: List(EitherOr(a, b)),
 ) -> List(EitherOr(a, List(b))) {
-  group_ors(ze_list)
+  group_ors_including_empty_lists(ze_list)
   |> list.filter(fn(thing) {
     case thing {
       Either(_) -> True
@@ -467,9 +430,8 @@ pub fn group_ors_no_empty_lists(
   })
 }
 
-/// Given a value z of arbitrary type and a bool b constructs a
-/// value of type EitherOr(z, z) by outputting Either(z) if b is
-/// True, else Or(z).
+/// Given a value `z` of arbitrary type and a bool `b` returns
+/// `Either(z)` if `b == True` else returns `Or(z)`.
 ///
 pub fn from_bool(
   z: z,
@@ -481,7 +443,7 @@ pub fn from_bool(
   }
 }
 
-/// Converts a Result(a, b) into an EitherOr(a, b).
+/// Converts a `Result(a, b)` into an `EitherOr(a, b)`.
 ///
 pub fn from_result(
   z: Result(a, b),
@@ -492,7 +454,7 @@ pub fn from_result(
   }
 }
 
-/// Converts an EitherOr(a, b) into a Result(a, b).
+/// Converts an `EitherOr(a, b)` into a `Result(a, b)`.
 ///
 pub fn to_result(
   z: EitherOr(a, b),
@@ -503,27 +465,28 @@ pub fn to_result(
   }
 }
 
-/// Given a value z of type z and a function fn(z) -> Bool
-/// constructs a value of type EitherOr(z, z) by outputting Either(z)
-/// if f(z) is True, else Or(z).
+/// Lazy form of `from_bool`.
 /// 
-pub fn classify(
+pub fn from_classifier(
   a: a,
   classifier classifier: fn(a) -> Bool
 ) -> EitherOr(a, a) {
-  from_bool(a, classifier(a))
+  case classifier(a) {
+    True -> Either(a)
+    False -> Or(a)
+  }
 }
 
-/// Given a List(z) of arbitrary type and a function f: fn(z) -> Bool,
+/// Given a `List(z)` of arbitrary type and a function `f: z -> Bool`,
 /// returns a List(EitherOr(z, z)) by mapping over the list with
-/// classify(_, f), i.e., by replacing each value z of the list
+/// from_classifier(_, f), i.e., by replacing each value z of the list
 /// with Either(z) if f(z) True, Or(z) otherwise.
-/// 
+///
 pub fn map_classify(
   list: List(z),
   classifier classifier: fn(z) -> Bool,
 ) -> List(EitherOr(z, z)) {
-  list.map(list, classify(_, classifier))
+  list.map(list, from_classifier(_, classifier))
 }
 
 /// Alias for map_classify.

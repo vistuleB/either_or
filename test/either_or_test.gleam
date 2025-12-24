@@ -155,21 +155,21 @@ pub fn map_oe_test() {
 
 pub fn flat_map_eo_test() {
   Either(1)
-  |> eo.flat_map_eo(fn(x) { Either(x + 1) }, fn(x) { Or(x * 3) })
+  |> eo.resolve_eo(fn(x) { Either(x + 1) }, fn(x) { Or(x * 3) })
   |> should.equal(Either(2))
 
   Or(1)
-  |> eo.flat_map_eo(fn(x) { Either(x + 1) }, fn(x) { Or(x * 3) })
+  |> eo.resolve_eo(fn(x) { Either(x + 1) }, fn(x) { Or(x * 3) })
   |> should.equal(Or(3))
 }
 
 pub fn flat_map_oe_test() {
   Either(1)
-  |> eo.flat_map_oe(fn(x) { Either(x + 1) }, fn(x) { Or(x * 3) })
+  |> eo.resolve_oe(fn(x) { Either(x + 1) }, fn(x) { Or(x * 3) })
   |> should.equal(Or(3))
 
   Or(1)
-  |> eo.flat_map_oe(fn(x) { Either(x + 1) }, fn(x) { Or(x * 3) })
+  |> eo.resolve_oe(fn(x) { Either(x + 1) }, fn(x) { Or(x * 3) })
   |> should.equal(Either(2))
 }
 
@@ -183,47 +183,47 @@ pub fn from_result_test() {
   |> should.equal(Or(1))
 }
 
-pub fn group_eithers_test() {
-  eo.group_eithers([Either(1), Either(5), Or("a"), Or("b"), Either(6)])
+pub fn group_eithers_including_empty_lists_test() {
+  eo.group_eithers_including_empty_lists([Either(1), Either(5), Or("a"), Or("b"), Either(6)])
   |> should.equal([Either([1, 5]), Or("a"), Either([]), Or("b"), Either([6])])
 
-  eo.group_eithers([Either(1), Either(5), Or("a"), Or("b")])
+  eo.group_eithers_including_empty_lists([Either(1), Either(5), Or("a"), Or("b")])
   |> should.equal([Either([1, 5]), Or("a"), Either([]), Or("b"), Either([])])
 
-  eo.group_eithers([Or("a"), Or("b")])
+  eo.group_eithers_including_empty_lists([Or("a"), Or("b")])
   |> should.equal([Either([]), Or("a"), Either([]), Or("b"), Either([])])
 }
 
 pub fn group_eithers_no_empty_lists_test() {
-  eo.group_eithers_no_empty_lists([Either(1), Either(5), Or("a"), Or("b"), Either(6)])
+  eo.group_eithers([Either(1), Either(5), Or("a"), Or("b"), Either(6)])
   |> should.equal([Either([1, 5]), Or("a"), Or("b"), Either([6])])
 
-  eo.group_eithers_no_empty_lists([Either(1), Either(5), Or("a"), Or("b")])
+  eo.group_eithers([Either(1), Either(5), Or("a"), Or("b")])
   |> should.equal([Either([1, 5]), Or("a"), Or("b")])
 
-  eo.group_eithers_no_empty_lists([Or("a"), Or("b")])
+  eo.group_eithers([Or("a"), Or("b")])
   |> should.equal([Or("a"), Or("b")])
+}
+
+pub fn group_ors_including_empty_lists_test() {
+  eo.group_ors_including_empty_lists([Or(1), Or(5), Either("a"), Either("b"), Or(6)])
+  |> should.equal([Or([1, 5]), Either("a"), Or([]), Either("b"), Or([6])])
+
+  eo.group_ors_including_empty_lists([Or(1), Or(5), Either("a"), Either("b")])
+  |> should.equal([Or([1, 5]), Either("a"), Or([]), Either("b"), Or([])])
+
+  eo.group_ors_including_empty_lists([Either("a"), Either("b")])
+  |> should.equal([Or([]), Either("a"), Or([]), Either("b"), Or([])])
 }
 
 pub fn group_ors_test() {
   eo.group_ors([Or(1), Or(5), Either("a"), Either("b"), Or(6)])
-  |> should.equal([Or([1, 5]), Either("a"), Or([]), Either("b"), Or([6])])
-
-  eo.group_ors([Or(1), Or(5), Either("a"), Either("b")])
-  |> should.equal([Or([1, 5]), Either("a"), Or([]), Either("b"), Or([])])
-
-  eo.group_ors([Either("a"), Either("b")])
-  |> should.equal([Or([]), Either("a"), Or([]), Either("b"), Or([])])
-}
-
-pub fn group_ors_no_empty_lists_test() {
-  eo.group_ors_no_empty_lists([Or(1), Or(5), Either("a"), Either("b"), Or(6)])
   |> should.equal([Or([1, 5]), Either("a"), Either("b"), Or([6])])
 
-  eo.group_ors_no_empty_lists([Or(1), Or(5), Either("a"), Either("b")])
+  eo.group_ors([Or(1), Or(5), Either("a"), Either("b")])
   |> should.equal([Or([1, 5]), Either("a"), Either("b")])
 
-  eo.group_ors_no_empty_lists([Either("a"), Either("b")])
+  eo.group_ors([Either("a"), Either("b")])
   |> should.equal([Either("a"), Either("b")])
 }
 
@@ -261,10 +261,10 @@ pub fn from_bool_test() {
 }
 
 pub fn classify_test() {
-  eo.classify(1, fn(x) { x > 0 })
+  eo.from_classifier(1, fn(x) { x > 0 })
   |> should.equal(Either(1))
 
-  eo.classify(0, fn(x) { x > 0 })
+  eo.from_classifier(0, fn(x) { x > 0 })
   |> should.equal(Or(0))
 }
 
