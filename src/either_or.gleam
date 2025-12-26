@@ -227,7 +227,7 @@ pub fn flatten(
   unwrap(t)
 }
 
-/// Compose `map_either` and `flatten_either`.
+/// Compose [`map_either`](#map_either) and [`flatten_either`](#flatten_either).
 ///
 pub fn flat_map_either(
   v: EitherOr(a, b),
@@ -236,7 +236,7 @@ pub fn flat_map_either(
   v |> map_either(f) |> flatten_either
 }
 
-/// Compose `map_or` and `flatten_or`.
+/// Compose [`map_or`](#map_or) and [`flatten_or`](#flatten_or).
 ///
 pub fn flat_map_or(
   v: EitherOr(a, b),
@@ -257,7 +257,7 @@ pub fn swap(
   }
 }
 
-/// Applies `map_either` to each element of a list of
+/// Applies [`map_either`](#map_either) to each element of a list of
 /// `EitherOr(a, b)` elements.
 /// 
 pub fn map_eithers(
@@ -267,7 +267,7 @@ pub fn map_eithers(
   list.map(v, map_either(_, f))
 }
 
-/// Applies `map_or` to each element of a list of
+/// Applies [`map_or`](#map_or) to each element of a list of
 /// `EitherOr(a, b)` elements.
 /// 
 pub fn map_ors(
@@ -277,7 +277,7 @@ pub fn map_ors(
   list.map(v, map_or(_, f))
 }
 
-/// Applies `resolve_eo` to each element of a list
+/// Applies [`resolve_eo`](#resolve_eo) to each element of a list
 /// of `EitherOr(a, b)` elements.
 /// 
 pub fn map_resolve(
@@ -467,28 +467,27 @@ pub fn to_result(
 
 /// Lazy form of `from_bool`.
 /// 
-pub fn from_classifier(
+pub fn from_condition(
   a: a,
-  classifier classifier: fn(a) -> Bool
+  condition condition: fn(a) -> Bool
 ) -> EitherOr(a, a) {
-  case classifier(a) {
+  case condition(a) {
     True -> Either(a)
     False -> Or(a)
   }
 }
 
-/// Given a `List(z)` of arbitrary type and a function `f: z -> Bool`,
-/// returns a List(EitherOr(z, z)) by mapping over the list with
-/// from_classifier(_, f), i.e., by replacing each value z of the list
-/// with Either(z) if f(z) True, Or(z) otherwise.
+/// Given a `List(z)` and a function `f: z -> Bool` returns
+/// a `List(EitherOr(z, z))` by mapping over the list with
+/// [`from_condition`](#from_condition)`(_, f)`.
 ///
-pub fn map_classify(
+pub fn map_from_condition(
   list: List(z),
-  classifier classifier: fn(z) -> Bool,
+  condition condition: fn(z) -> Bool,
 ) -> List(EitherOr(z, z)) {
-  list.map(list, from_classifier(_, classifier))
+  list.map(list, from_condition(_, condition))
 }
 
-/// Alias for map_classify.
+/// Alias for [map_from_condition](#map_from_condition).
 ///
-pub const discriminate = map_classify
+pub const discriminate = map_from_condition

@@ -1,7 +1,7 @@
 name = "either_or"
-version = "2.0.0"
+version = "2.0.2"
 
-description = "A package implementing a choice type named `EitherOr` with variants `Either` and `Or`. Stemming from a failed PR to [gleither](https://github.com/bwireman/gleither). Implements more list-related functions than the latter."
+description = "A package implementing a choice type named `EitherOr` with variants `Either` and `Or`. Similar to [gleither](https://github.com/bwireman/gleither)."
 licences = ["Apache-2.0"]
 repository = { type = "github", user = "vistuleB", repo = "either_or" }
 

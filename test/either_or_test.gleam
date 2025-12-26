@@ -261,14 +261,14 @@ pub fn from_bool_test() {
 }
 
 pub fn classify_test() {
-  eo.from_classifier(1, fn(x) { x > 0 })
+  eo.from_condition(1, fn(x) { x > 0 })
   |> should.equal(Either(1))
 
-  eo.from_classifier(0, fn(x) { x > 0 })
+  eo.from_condition(0, fn(x) { x > 0 })
   |> should.equal(Or(0))
 }
 
 pub fn map_classify_test() {
-  eo.map_classify([-1, 0, 1, 0], fn(x) { x > 0 })
+  eo.map_from_condition([-1, 0, 1, 0], fn(x) { x > 0 })
   |> should.equal([Or(-1), Or(0), Either(1), Or(0)])
 }
