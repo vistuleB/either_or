@@ -1,13 +1,3 @@
-# either_or
-
-[![Package Version](https://img.shields.io/hexpm/v/either_or)](https://hex.pm/packages/either_or)
-[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/either_or/)
-
-```sh
-gleam add either_or@1
-```
-
-```gleam
 import gleam/string
 import either_or as eo
 
@@ -50,15 +40,6 @@ pub fn main() -> Nil {
   //   Or("Bibimbap"),
   //   Either(["Al-Ansar", "Al-Akbar", "Al-Kashimoodo"]),
   // ]
+
   Nil
 }
-```
-
-Further documentation can be found at <https://hexdocs.pm/either_or>.
-
-## Development
-
-```sh
-gleam run   # Run the project
-gleam test  # Run the tests
-```
