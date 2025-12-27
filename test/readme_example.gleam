@@ -10,36 +10,35 @@ import either_or as eo
 
 pub fn main() -> Nil {
   [
-    "Alan",
-    "Ackerman",
-    "Bob",
-    "Alfonse",
-    "Bibimbap",
-    "Al-Ansar",
-    "Al-Akbar",
-    "Al-Kashimoodo",
+    "a",
+    "a",
+    "b",
+    "a",
+    "b",
+    "a",
+    "a",
+    "a",
   ]
-  |> eo.discriminate(string.starts_with(_, "A"))
+  |> eo.discriminate(string.starts_with(_, "a"))
   |> echo
   // [
-  //   Either("Alan"),
-  //   Either("Ackerman"),
-  //   Or("Bob"),
-  //   Either("Alfonse"),
-  //   Or("Bibimbap"),
-  //   Either("Al-Ansar"),
-  //   Either("Al-Akbar"),
-  //   Either("Al-Kashimoodo"),
+  //   Either("a"),
+  //   Either("a"),
+  //   Or("b"),
+  //   Either("a"),
+  //   Or("b"),
+  //   Either("a"),
+  //   Either("a"),
+  //   Either("a"),
   // ]
   |> eo.group_eithers
   |> echo
   // [
-  //   Either(["Alan", "Ackerman"]),
-  //   Or("Bob"),
-  //   Either(["Alfonse"]),
-  //   Or("Bibimbap"),
-  //   Either(["Al-Ansar", "Al-Akbar", "Al-Kashimoodo"]),
+  //   Either(["a", "a"]),
+  //   Or("b"),
+  //   Either(["a"]),
+  //   Or("b"),
+  //   Either(["a", "a", "a"]),
   // ]
-
   Nil
 }
