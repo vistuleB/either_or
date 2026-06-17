@@ -258,3 +258,9 @@ pub fn map_classify_test() {
   eo.map_classify([-1, 0, 1, 0], fn(x) { x > 0 })
   |> should.equal([Or(-1), Or(0), Either(1), Or(0)])
 }
+
+pub fn partition_test() {
+  eo.partition([Or(4), Either(0), Either(1), Or(1), Or(2)])
+  |> should.equal(#([0, 1], [4, 1, 2]))
+}
+

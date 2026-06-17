@@ -471,6 +471,15 @@ pub fn map_classify(
   list.map(list, classify(_, predicate))
 }
 
+/// Alias for [`map_classify`](#classify)`(_, f)`.
+/// 
+pub fn discriminate(
+  from list: List(z),
+  with predicate: fn(z) -> Bool,
+) -> List(EitherOr(z, z)) {
+  list.map(list, classify(_, predicate))
+}
+
 /// Splits a `List(EitherOr(a, b))` into a `#(List(a), List(b))`
 /// while inverting the order in each sublist. Faster than
 /// [`either_or.partition`](#partition), which maintains the
