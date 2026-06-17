@@ -113,7 +113,7 @@ pub fn map_or(
 /// Apply separate maps to each payload of an `EitherOr`
 /// value.
 ///
-/// Symmetric to `map_oe`.
+/// Symmetric to [`map_oe`](#map_oe).
 /// 
 /// Both functions are offered to in order to allow 
 /// the happy path to be pursued with either `Either`
@@ -133,7 +133,7 @@ pub fn map_eo(
 /// Apply separate maps to each payload of an `EitherOr`
 /// value.
 ///
-/// Symmetric to `map_eo`.
+/// Symmetric to [`map_eo`](#map_eo).
 /// 
 /// Both functions are offered to in order to allow 
 /// the happy path to be pursued with either `Either`
@@ -155,7 +155,7 @@ pub fn map_oe(
 /// value has the form `Either(a)` and returns `f2(b)`
 /// if the value has the form `Or(b)`.
 ///
-/// Symmetric to `resolve_oe`.
+/// Symmetric to [`resolve_oe`](#resolve_oe).
 /// 
 /// Both functions are offered to in order to allow 
 /// the happy path to be pursued with either `Either`
@@ -172,12 +172,12 @@ pub fn resolve_eo(
   }
 }
 
-/// Given a value of type`EitherOr(a, b)` and functions
+/// Given a value of type `EitherOr(a, b)` and functions
 /// `f1: b -> c`, `f2: a -> c`, returns `f1(a)` if the
-/// value has the form Either(a) and returns `f2(b)`
+/// value has the form `Either(a)` and returns `f2(b)`
 /// if the value has the form `Or(b)`.
 ///
-/// Symmetric to `resolve_eo`.
+/// Symmetric to [`resolve_eo`](#resolve_eo).
 /// 
 /// Both functions are offered to in order to allow 
 /// the happy path to be pursued with either `Either`
@@ -218,7 +218,7 @@ pub fn flatten_or(
 
 /// Flatten a `EitherOr(EitherOr(a, b), EitherOr(a, b))` value.
 /// 
-/// Isomorphic to the special case of `unwrap` in which the type
+/// Isomorphic to the special case of [`unwrap`](#unwrap) in which the type
 /// `a` has the form `EitherOr(c, d)` for some types `c` and `d`.
 /// 
 pub fn flatten(
@@ -288,159 +288,106 @@ pub fn map_resolve(
   list.map(v, resolve_eo(_, f, g))
 }
 
-fn group_eithers_accumulator(
+/// Given a `List(EitherOr(a, b))` removes all elements
+/// of the form `Or(b)` and unwraps the remaining elements.
+/// 
+pub fn keep_eithers(list: List(EitherOr(a, b))) -> List(a) {
+  list.filter_map(list, to_result)
+}
+
+/// Given a `List(EitherOr(a, b))` removes all elements
+/// of the form `Either(a)` and unwraps the remaining elements.
+/// 
+pub fn keep_ors(list: List(EitherOr(a, b))) -> List(b) {
+  list.filter_map(list, to_swapped_result)
+}
+
+fn do_group_eithers(
   already_packaged: List(EitherOr(List(a), b)),
   under_construction: List(a),
   upcoming: List(EitherOr(a, b)),
 ) -> List(EitherOr(List(a), b)) {
+  let package_under_construction = fn() {
+    case under_construction {
+      [] -> already_packaged
+      _ -> [under_construction |> list.reverse |> Either, ..already_packaged]
+    }
+  }
+
   case upcoming {
     [] ->
-      [under_construction |> list.reverse |> Either, ..already_packaged]
+      package_under_construction()
       |> list.reverse
 
     [Either(a), ..rest] ->
-      group_eithers_accumulator(
+      do_group_eithers(
         already_packaged,
         [a, ..under_construction],
         rest,
       )
 
     [Or(b), ..rest] ->
-      group_eithers_accumulator(
-        [
-          Or(b),
-          under_construction |> list.reverse |> Either,
-          ..already_packaged
-        ],
+      do_group_eithers(
+        [Or(b), ..package_under_construction()],
         [],
         rest,
       )
   }
-}
-
-fn group_ors_accumulator(
-  already_packaged: List(EitherOr(a, List(b))),
-  under_construction: List(b),
-  upcoming: List(EitherOr(a, b)),
-) -> List(EitherOr(a, List(b))) {
-  case upcoming {
-    [] ->
-      [under_construction |> list.reverse |> Or, ..already_packaged]
-      |> list.reverse
-
-    [Or(b), ..rest] ->
-      group_ors_accumulator(already_packaged, [b, ..under_construction], rest)
-
-    [Either(a), ..rest] ->
-      group_ors_accumulator(
-        [
-          Either(a),
-          under_construction |> list.reverse |> Or,
-          ..already_packaged
-        ],
-        [],
-        rest,
-      )
-  }
-}
-
-/// Given a `List(EitherOr(a, b))` removes all elements
-/// of the form `Or(b)` and unwraps the remaining elements.
-/// 
-pub fn remove_ors_unwrap_eithers(ze_list: List(EitherOr(a, b))) -> List(a) {
-  list.filter_map(ze_list, fn(either_or) {
-    case either_or {
-      Either(sth) -> Ok(sth)
-      Or(_) -> Error(Nil)
-    }
-  })
-}
-
-/// Given a `List(EitherOr(a, b))` removes all elements
-/// of the form `Either(a)` and unwraps the remaining elements.
-/// 
-pub fn remove_eithers_unwrap_ors(ze_list: List(EitherOr(a, b))) -> List(b) {
-  list.filter_map(ze_list, fn(either_or) {
-    case either_or {
-      Either(_) -> Error(Nil)
-      Or(sth) -> Ok(sth)
-    }
-  })
-}
-
-/// Aggregates the payloads of consecutive `Either` instances
-/// from a `List(EitherOr(a, b))` into a single `Either(List(a))` 
-/// elements, such as to turn a `List(EitherOr(a, b))` into a
-/// `List(EitherOr(List(a), b))`. Introduces an element of the
-/// form `Either([]: List(a))` between each consecutive pair of
-/// `Or(b)` elements symoblizing an empty of `Either` payloads
-/// sitting between pair of consecutive `Or(b)` elements.
-/// 
-pub fn group_eithers_including_empty_lists(
-  ze_list: List(EitherOr(a, b)),
-) -> List(EitherOr(List(a), b)) {
-  group_eithers_accumulator([], [], ze_list)
-}
-
-/// Aggregates the payloads of consecutive `Or` instances 
-/// from a `List(EitherOr(a, b))` into single `Or(List(b))` 
-/// elements, such as to turn a `List(EitherOr(a, b))` into a
-/// `List(EitherOr(a, List(b)))`. Introduces an element of the
-/// form `Or([]: List(b))` between each consecutive pair of
-/// `Either(a)` elements, symoblizing an empty of `Or` payloads
-/// sitting between pair of consecutive `Either(a)` elements.
-/// 
-pub fn group_ors_including_empty_lists(ze_list: List(EitherOr(a, b))) -> List(EitherOr(a, List(b))) {
-  group_ors_accumulator([], [], ze_list)
 }
 
 /// Aggregates the payloads of consecutive `Either` instances
 /// from a `List(EitherOr(a, b))` into single `Either(List(a))` 
 /// elements, such as to turn a `List(EitherOr(a, b))` into a
-/// `List(EitherOr(List(a), b))`. Discards elements of the form
-/// `Either([])` from the final list.
+/// `List(EitherOr(List(a), b))`.
 /// 
 pub fn group_eithers(
   ze_list: List(EitherOr(a, b)),
 ) -> List(EitherOr(List(a), b)) {
-  group_eithers_including_empty_lists(ze_list)
-  |> list.filter(fn(thing) {
-    case thing {
-      Either(a_list) -> !{ list.is_empty(a_list) }
-      Or(_) -> True
-    }
-  })
+  do_group_eithers([], [], ze_list)
 }
 
-/// Aggregates the payloads of consecutive Either instances
-/// from a `List(EitherOr(a, b))` into single `Either(List(a))` 
+fn do_group_ors(
+  already_packaged: List(EitherOr(a, List(b))),
+  under_construction: List(b),
+  upcoming: List(EitherOr(a, b)),
+) -> List(EitherOr(a, List(b))) {
+  let package_under_construction = fn() {
+    case under_construction {
+      [] -> already_packaged
+      _ -> [under_construction |> list.reverse |> Or, ..already_packaged]
+    }
+  }
+
+  case upcoming {
+    [] ->
+      package_under_construction()
+      |> list.reverse
+
+    [Or(b), ..rest] ->
+      do_group_ors(
+        already_packaged,
+        [b, ..under_construction],
+        rest,
+      )
+
+    [Either(a), ..rest] ->
+      do_group_ors(
+        [Either(a), ..package_under_construction()],
+        [],
+        rest,
+      )
+  }
+}
+
+/// Aggregates the payloads of consecutive Or instances
+/// from a `List(EitherOr(a, b))` into single `Or(List(b))` 
 /// elements such as to turn a `List(EitherOr(a, b))` into a
-/// `List(EitherOr(List(a), b))`. Discards elements of the form
-/// `Or([])` from the final list.
+/// `List(EitherOr(a, List(b)))`.
 /// 
 pub fn group_ors(
   ze_list: List(EitherOr(a, b)),
 ) -> List(EitherOr(a, List(b))) {
-  group_ors_including_empty_lists(ze_list)
-  |> list.filter(fn(thing) {
-    case thing {
-      Either(_) -> True
-      Or(a_list) -> !{ list.is_empty(a_list) }
-    }
-  })
-}
-
-/// Given a value `z` of arbitrary type and a bool `b` returns
-/// `Either(z)` if `b == True` else returns `Or(z)`.
-///
-pub fn from_bool(
-  z: z,
-  b: Bool,
-) -> EitherOr(z, z) {
-  case b {
-    True -> Either(z)
-    False -> Or(z)
-  }
+  do_group_ors([], [], ze_list)
 }
 
 /// Converts a `Result(a, b)` into an `EitherOr(a, b)`.
@@ -465,13 +412,49 @@ pub fn to_result(
   }
 }
 
-/// Lazy form of `from_bool`.
+/// Converts an `EitherOr(a, b)` into a `Result(b, a)`.
+///
+fn to_swapped_result(
+  z: EitherOr(a, b),
+) -> Result(b, a) {
+  case z {
+    Either(x) -> Error(x)
+    Or(x) -> Ok(x)
+  }
+}
+
+/// Given a value `z` of arbitrary type and a bool `b` returns
+/// `Either(z)` if `b == True` else returns `Or(z)`.
+///
+pub fn from_bool(
+  z: z,
+  b: Bool,
+) -> EitherOr(z, z) {
+  case b {
+    True -> Either(z)
+    False -> Or(z)
+  }
+}
+
+/// Lazy form of [`from_bool`](#from_bool).
 /// 
-pub fn from_condition(
+pub fn from_predicate(
   a: a,
-  condition condition: fn(a) -> Bool
+  predicate predicate: fn(a) -> Bool
 ) -> EitherOr(a, a) {
-  case condition(a) {
+  case predicate(a) {
+    True -> Either(a)
+    False -> Or(a)
+  }
+}
+
+/// Alias for of [`from_predicate`](#from_predicate).
+/// 
+pub fn classify(
+  a: a,
+  predicate predicate: fn(a) -> Bool
+) -> EitherOr(a, a) {
+  case predicate(a) {
     True -> Either(a)
     False -> Or(a)
   }
@@ -479,15 +462,38 @@ pub fn from_condition(
 
 /// Given a `List(z)` and a function `f: z -> Bool` returns
 /// a `List(EitherOr(z, z))` by mapping over the list with
-/// [`from_condition`](#from_condition)`(_, f)`.
-///
-pub fn map_from_condition(
-  list: List(z),
-  condition condition: fn(z) -> Bool,
+/// [`classify`](#classify)`(_, f)`.
+/// 
+pub fn map_classify(
+  from list: List(z),
+  with predicate: fn(z) -> Bool,
 ) -> List(EitherOr(z, z)) {
-  list.map(list, from_condition(_, condition))
+  list.map(list, classify(_, predicate))
 }
 
-/// Alias for [map_from_condition](#map_from_condition).
-///
-pub const discriminate = map_from_condition
+/// Splits a `List(EitherOr(a, b))` into a `#(List(a), List(b))`
+/// while inverting the order in each sublist. Faster than
+/// [`either_or.partition`](#partition), which maintains the
+/// original order.
+/// 
+pub fn partition_reversed(from list: List(EitherOr(a, b))) -> #(List(a), List(b)) {
+  list.fold(
+    over: list, 
+    from: #([], []), 
+    with: fn(acc, item) {
+    case item {
+      Either(val) -> #([val, ..acc.0], acc.1)
+      Or(val) -> #(acc.0, [val, ..acc.1])
+    }
+  })
+}
+
+/// Splits a `List(EitherOr(a, b))` into a `#(List(a), List(b))`
+/// while maintaining the order in each sublist.
+/// 
+/// See also [`partition_reversed`](#partition_reversed).
+/// 
+pub fn partition(from list: List(EitherOr(a, b))) -> #(List(a), List(b)) {
+  let #(l1, l2) = partition_reversed(list)
+  #(l1 |> list.reverse, l2 |> list.reverse)
+}

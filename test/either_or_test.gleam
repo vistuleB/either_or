@@ -183,17 +183,6 @@ pub fn from_result_test() {
   |> should.equal(Or(1))
 }
 
-pub fn group_eithers_including_empty_lists_test() {
-  eo.group_eithers_including_empty_lists([Either(1), Either(5), Or("a"), Or("b"), Either(6)])
-  |> should.equal([Either([1, 5]), Or("a"), Either([]), Or("b"), Either([6])])
-
-  eo.group_eithers_including_empty_lists([Either(1), Either(5), Or("a"), Or("b")])
-  |> should.equal([Either([1, 5]), Or("a"), Either([]), Or("b"), Either([])])
-
-  eo.group_eithers_including_empty_lists([Or("a"), Or("b")])
-  |> should.equal([Either([]), Or("a"), Either([]), Or("b"), Either([])])
-}
-
 pub fn group_eithers_no_empty_lists_test() {
   eo.group_eithers([Either(1), Either(5), Or("a"), Or("b"), Either(6)])
   |> should.equal([Either([1, 5]), Or("a"), Or("b"), Either([6])])
@@ -203,17 +192,6 @@ pub fn group_eithers_no_empty_lists_test() {
 
   eo.group_eithers([Or("a"), Or("b")])
   |> should.equal([Or("a"), Or("b")])
-}
-
-pub fn group_ors_including_empty_lists_test() {
-  eo.group_ors_including_empty_lists([Or(1), Or(5), Either("a"), Either("b"), Or(6)])
-  |> should.equal([Or([1, 5]), Either("a"), Or([]), Either("b"), Or([6])])
-
-  eo.group_ors_including_empty_lists([Or(1), Or(5), Either("a"), Either("b")])
-  |> should.equal([Or([1, 5]), Either("a"), Or([]), Either("b"), Or([])])
-
-  eo.group_ors_including_empty_lists([Either("a"), Either("b")])
-  |> should.equal([Or([]), Either("a"), Or([]), Either("b"), Or([])])
 }
 
 pub fn group_ors_test() {
@@ -260,15 +238,23 @@ pub fn from_bool_test() {
   |> should.equal(Either(1))
 }
 
-pub fn classify_test() {
-  eo.from_condition(1, fn(x) { x > 0 })
+pub fn from_predicate_test() {
+  eo.from_predicate(1, fn(x) { x > 0 })
   |> should.equal(Either(1))
 
-  eo.from_condition(0, fn(x) { x > 0 })
+  eo.from_predicate(0, fn(x) { x > 0 })
+  |> should.equal(Or(0))
+}
+
+pub fn classify_test() {
+  eo.classify(1, fn(x) { x > 0 })
+  |> should.equal(Either(1))
+
+  eo.classify(0, fn(x) { x > 0 })
   |> should.equal(Or(0))
 }
 
 pub fn map_classify_test() {
-  eo.map_from_condition([-1, 0, 1, 0], fn(x) { x > 0 })
+  eo.map_classify([-1, 0, 1, 0], fn(x) { x > 0 })
   |> should.equal([Or(-1), Or(0), Either(1), Or(0)])
 }

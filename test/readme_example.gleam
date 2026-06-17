@@ -19,7 +19,7 @@ pub fn main() -> Nil {
     "a",
     "a",
   ]
-  |> eo.discriminate(string.starts_with(_, "a"))
+  |> eo.map_classify(string.starts_with(_, "a"))
   |> echo
   // [
   //   Either("a"),
