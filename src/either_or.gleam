@@ -471,7 +471,7 @@ pub fn map_classify(
   list.map(list, classify(_, predicate))
 }
 
-/// Alias for [`map_classify`](#classify)`(_, f)`.
+/// Alias for [`map_classify`](#map_classify)`(_, f)`.
 /// 
 pub fn discriminate(
   from list: List(z),
