@@ -1,5 +1,5 @@
 name = "either_or"
-version = "3.0.0"
+version = "3.0.1"
 
 description = "A package implementing a choice type named `EitherOr` with variants `Either` and `Or`. Similar to [gleither](https://github.com/bwireman/gleither)."
 licences = ["Apache-2.0"]
